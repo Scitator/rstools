@@ -9,7 +9,12 @@ setup(
     author_email='scitator@gmail.com',
     license='GPL3',
     packages=['rstools'],
-    package_dir={'rstools': './rstools'},
+    package_dir={
+        'rstools': './rstools',
+        'rstools.tf': './rstools/tf',
+        'rstools.utils': './rstools/utils',
+        'rstools.visualization': './rstools/visualization',
+    },
     install_requires=[
         'tensorflow==1.0.0',
     ],
