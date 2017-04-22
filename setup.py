@@ -8,7 +8,7 @@ setup(
     author='Kolesnikov Sergey',
     author_email='scitator@gmail.com',
     license='GPL3',
-    packages=['rstools'],
+    packages=['rstools', 'rstools.tf', 'rstools.utils', 'rstools.visualization'],
     package_dir={
         'rstools': './rstools',
         'rstools.tf': './rstools/tf',
