@@ -2,6 +2,7 @@ import numpy as np
 import itertools
 import collections
 from tqdm import trange
+import os
 import tensorflow as tf
 from ..utils.os_utils import create_if_need, save_history, save_model
 from ..visualization.plotter import plot_all_metrics
@@ -34,6 +35,9 @@ def run_train(sess, train_gen, train_params, val_gen=None, val_params=None, run_
     model_global_step = run_params.get("model_global_step", None)
     create_if_need(log_dir)
 
+    train_iter_epoch = train_params.get("n_batch", -1) < 0
+    val_iter_epoch = val_params.get("n_batch", -1) < 0
+
     history = collections.defaultdict(list)
     saver = tf.train.Saver()
 
@@ -44,7 +48,7 @@ def run_train(sess, train_gen, train_params, val_gen=None, val_params=None, run_
 
     for i_epoch in tr:
         i_epoch += 1
-        if train_params.get("n_batch", -1) < 0:
+        if train_iter_epoch:
             train_gen, train_gen_copy = itertools.tee(train_gen, 2)
         else:
             train_gen_copy = train_gen
@@ -53,10 +57,10 @@ def run_train(sess, train_gen, train_params, val_gen=None, val_params=None, run_
             history[metric].append(np.mean(train_epoch_history[metric]))
 
         if val_gen is not None and val_params is not None:
-            if val_params.get("n_batch", -1) < 0:
+            if val_iter_epoch:
                 val_gen, val_gen_copy = itertools.tee(val_gen, 2)
             else:
-                val_gen_copy = train_gen
+                val_gen_copy = val_gen
             val_epoch_history = run_generator(sess, data_gen=val_gen_copy, **val_params)
             for metric in val_epoch_history:
                 history[metric].append(np.mean(val_epoch_history[metric]))
