@@ -15,7 +15,5 @@ setup(
         'rstools.utils': './rstools/utils',
         'rstools.visualization': './rstools/visualization',
     },
-    install_requires=[
-        'tensorflow==1.0.0',
-    ],
+    install_requires=[],
     zip_safe=False)

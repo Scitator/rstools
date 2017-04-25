@@ -11,3 +11,9 @@ def iterate_minibatches(inputs, batch_size, shuffle=True):
         else:
             excerpt = slice(start_idx, start_idx + batch_size)
         yield inputs[excerpt]
+
+
+def generate_minibatches(inputs, batch_size, shuffle=True):
+    while True:
+        for data in iterate_minibatches(inputs, batch_size, shuffle):
+            yield data
