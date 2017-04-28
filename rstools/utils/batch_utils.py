@@ -73,8 +73,8 @@ def files_data_generator(
 
 
 def merge_generators(generators, proc_fn=None):
-    for its in zip(generators):
-        data = [next(it) for it in its]
+    while True:
+        data = [next(it) for it in generators]
         if proc_fn is not None:
             data = proc_fn(data)
         yield data
