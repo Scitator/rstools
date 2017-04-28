@@ -11,6 +11,8 @@ def create_random_state(rng):
 
 def iterate_minibatches(inputs, batch_size, shuffle=False, rng=42):
     rng = create_random_state(rng)
+    if not isinstance(inputs, np.ndarray):
+        inputs = np.array(inputs)
     if shuffle:
         indices = np.arange(len(inputs))
         rng.shuffle(indices)
@@ -24,6 +26,8 @@ def iterate_minibatches(inputs, batch_size, shuffle=False, rng=42):
 
 def generate_minibatches(inputs, batch_size, shuffle=False, rng=42):
     rng = create_random_state(rng)
+    if not isinstance(inputs, np.ndarray):
+        inputs = np.array(inputs)
     while True:
         for data in iterate_minibatches(inputs, batch_size, shuffle=shuffle, rng=rng):
             yield data
