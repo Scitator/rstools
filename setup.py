@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='rstools',
-    version='0.1',
+    version='0.1.5',
     description='Research tools.',
     url='https://github.com/Scitator/rstools',
     author='Kolesnikov Sergey',

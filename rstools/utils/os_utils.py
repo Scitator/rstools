@@ -1,5 +1,6 @@
 import os
 import pickle
+from glob import glob
 
 
 def create_if_need(path):
@@ -16,3 +17,7 @@ def save_model(sess, saver, save_dir, model_global_step=None):
     create_if_need(save_dir)
     save_path = os.path.join(save_dir, "model.cpkl")
     saver.save(sess, save_path, global_step=model_global_step)
+
+
+def masked_files(mask):
+    return sorted(glob(mask))
