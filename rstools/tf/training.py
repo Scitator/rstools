@@ -8,7 +8,7 @@ from ..utils.os_utils import create_if_need, save_history, save_model
 from ..visualization.plotter import plot_all_metrics
 
 
-def run_generator(sess, run_keys, result_keys, feed_keys, data_gen, n_batch=np.inf):
+def run_generator(sess, run_keys, result_keys, feed_keys, data_gen, n_batch=-1):
     history = collections.defaultdict(list)
 
     for i_batch, feed_values in enumerate(data_gen):
@@ -19,7 +19,7 @@ def run_generator(sess, run_keys, result_keys, feed_keys, data_gen, n_batch=np.i
         for i, key in enumerate(result_keys):
             history[key].append(run_result[i])
 
-        if i_batch + 1 >= n_batch:
+        if i_batch + 1 >= n_batch > 0:
             break
     return history
 
