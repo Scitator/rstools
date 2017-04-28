@@ -1,6 +1,6 @@
 import numpy as np
 import types
-from .os_utils import masked_files
+from .os_utils import masked_if_need
 
 
 def create_random_state(rng):
@@ -31,7 +31,7 @@ def generate_minibatches(inputs, batch_size, shuffle=False, rng=42):
 
 def files_iterator(mask, open_fn, shuffle=False, rng=42):
     rng = create_random_state(rng)
-    files = masked_files(mask)
+    files = masked_if_need(mask)
     for file in iterate_minibatches(files, 1, shuffle, rng=rng):
         file_data = open_fn(file[0])
         yield file_data
@@ -47,7 +47,7 @@ def files_generator(mask, open_fn, shuffle=False, rng=42):
 def files_data_iterator(mask, open_fn, batch_size, files_shuffle=False, data_shuffle=False, rng=42):
     rng = create_random_state(rng)
 
-    files = masked_files(mask)
+    files = masked_if_need(mask)
     for file in iterate_minibatches(files, 1, files_shuffle, rng=rng):
         file_data = open_fn(file[0])
         if isinstance(file_data, types.GeneratorType):

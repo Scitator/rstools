@@ -20,7 +20,19 @@ def pickle_data(data, path):
 
 
 def masked_files(mask):
-    return sorted(glob(mask))
+    if isinstance(mask, list) and all(["*" in x for x in mask]):
+        files = [file for file_mask in mask for file in masked_files(file_mask)]
+    elif isinstance(mask, str):
+        files = glob(mask)
+    else:
+        raise Exception("Unknown instance")
+    return sorted(files)
+
+
+def masked_if_need(mask):
+    if isinstance(mask, list) and all(["*" not in x for x in mask]):
+        return mask
+    return masked_files(mask)
 
 
 def save_history(history, out_dir):
