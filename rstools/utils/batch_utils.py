@@ -66,3 +66,10 @@ def files_data_generator(
                 mask, open_fn, batch_size,
                 files_shuffle=files_shuffle, data_shuffle=data_shuffle, rng=rng):
             yield data
+
+
+def merge_generators(generators, proc_fn=None):
+    for data in zip(generators):
+        if proc_fn is not None:
+            data = proc_fn(data)
+        yield data
