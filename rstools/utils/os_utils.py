@@ -1,6 +1,7 @@
 import os
 import pickle
 from glob import glob
+from collections import Iterable
 
 
 def create_if_need(path):
@@ -20,10 +21,12 @@ def pickle_data(data, path):
 
 
 def masked_files(mask):
-    if isinstance(mask, list) and all(["*" in x for x in mask]):
-        files = [file for file_mask in mask for file in masked_files(file_mask)]
-    elif isinstance(mask, str):
+    if isinstance(mask, str):
         files = glob(mask)
+    elif isinstance(mask, Iterable) \
+            and all(isinstance(x, str) for x in mask) \
+            and all(["*" in x for x in mask]):
+        files = [file for file_mask in mask for file in masked_files(file_mask)]
     else:
         raise Exception("Unknown instance")
     return sorted(files)
