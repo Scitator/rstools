@@ -33,7 +33,9 @@ def masked_files(mask):
 
 
 def masked_if_need(mask):
-    if isinstance(mask, list) and all(["*" not in x for x in mask]):
+    if isinstance(mask, Iterable) \
+            and all(isinstance(x, str) for x in mask) \
+            and all(["*" not in x for x in mask]):
         return mask
     return masked_files(mask)
 
