@@ -11,8 +11,6 @@ def create_random_state(rng):
 
 def iterate_minibatches(inputs, batch_size, shuffle=False, rng=42):
     rng = create_random_state(rng)
-    if not isinstance(inputs, np.ndarray):
-        inputs = np.array(inputs)
     if shuffle:
         indices = np.arange(len(inputs))
         rng.shuffle(indices)
@@ -31,6 +29,57 @@ def generate_minibatches(inputs, batch_size, shuffle=False, rng=42):
     while True:
         for data in iterate_minibatches(inputs, batch_size, shuffle=shuffle, rng=rng):
             yield data
+
+
+def sequence_batch(inputs, max_sequence_length=None, time_major=False, pad=0):
+    """
+    Args:
+        inputs:
+            list of sequences (integer lists)
+        max_sequence_length:
+            integer specifying how large should `max_time` dimension be.
+            If None, maximum sequence length would be used
+        time_major:
+            boolean flag to output time-major batch
+        pad:
+            special symbol for sequence padding
+
+    Outputs:
+        result_batch:
+            if time_major=true:
+                input sequence transformed into time-major matrix
+                (shape [max_time, batch_size]) padded with pad's
+            else:
+                input sequence transformed into batch-major matrix
+                (shape [batch_size, max_time]) padded with pad's
+        sequence_lengths:
+            batch-sized list of integers specifying amount of active
+            time steps in each input sequence
+    """
+
+    sequence_lengths = [len(seq) for seq in inputs]
+    batch_size = len(inputs)
+
+    max_sequence_length = max_sequence_length or max(sequence_lengths)
+
+    result_batch = np.ones(shape=[batch_size, max_sequence_length], dtype=np.int32) * pad
+
+    for i, seq in enumerate(inputs):
+        for j, element in enumerate(seq):
+            result_batch[i, j] = element
+
+    if time_major:
+        # [batch_size, max_time] -> [max_time, batch_size]
+        result_batch = result_batch.swapaxes(0, 1)
+
+    return result_batch, sequence_lengths
+
+
+def sequence_generator(data_gen, batch_params=None):
+    batch_params = batch_params or {}
+    for batch_seq in data_gen:
+        inputs_time_major, sequence_lengths = sequence_batch(batch_seq, **batch_params)
+        yield inputs_time_major, sequence_lengths
 
 
 def files_iterator(mask, open_fn, shuffle=False, rng=42):
