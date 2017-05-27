@@ -46,5 +46,5 @@ def save_history(history, out_dir):
 
 def save_model(sess, saver, save_dir, model_global_step=None):
     create_if_need(save_dir)
-    save_path = os.path.join(save_dir, "model.cpkl")
+    save_path = os.path.join(save_dir, "model.ckpt")
     saver.save(sess, save_path, global_step=model_global_step)
