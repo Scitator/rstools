@@ -25,7 +25,7 @@ def run_generator(
 
         if logger is not None:
             for key, value in history.items():
-                logger.scalar_summary(key, value, i_step + i_batch)
+                logger.scalar_summary(key, value[-1], i_step + i_batch)
 
         if i_batch + 1 >= n_batch > 0:
             break
