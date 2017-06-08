@@ -15,20 +15,35 @@ def run_generator(
         n_batch=-1, logger=None):
     history = collections.defaultdict(list)
 
-    for i_batch, feed_values in enumerate(data_gen):
-        run_result = sess.run(
-            run_keys,
-            feed_dict=dict(zip(feed_keys, feed_values)))
+    # typical python generator
+    if data_gen is not None:
+        for i_batch, feed_values in enumerate(data_gen):
+            run_result = sess.run(
+                run_keys,
+                feed_dict=dict(zip(feed_keys, feed_values)))
 
-        for i, key in enumerate(result_keys):
-            history[key].append(run_result[i])
+            for i, key in enumerate(result_keys):
+                history[key].append(run_result[i])
 
-        if logger is not None:
-            for key, value in history.items():
-                logger.scalar_summary(key, value[-1], i_step + i_batch)
+            if logger is not None:
+                for key, value in history.items():
+                    logger.scalar_summary(key, value[-1], i_step + i_batch)
 
-        if i_batch + 1 >= n_batch > 0:
-            break
+            if i_batch + 1 >= n_batch > 0:
+                break
+    else:  # tf.FIFO generator
+        for i_batch in range(n_batch):
+            run_result = sess.run(run_keys)
+
+            for i, key in enumerate(result_keys):
+                history[key].append(run_result[i])
+
+            if logger is not None:
+                for key, value in history.items():
+                    logger.scalar_summary(key, value[-1], i_step + i_batch)
+
+            if i_batch + 1 >= n_batch > 0:
+                break
     return history
 
 
@@ -45,7 +60,7 @@ def run_train(sess, train_gen, train_params, val_gen=None, val_params=None, run_
 
     logger = Logger(log_dir) if run_params.get("use_tensorboard", False) else None
     train_iter_epoch = train_params.get("n_batch", -1) < 0
-    val_iter_epoch = val_params.get("n_batch", -1) < 0
+    val_iter_epoch = val_params.get("n_batch", -1) < 0 if val_params is not None else None
 
     history = collections.defaultdict(list)
     saver = tf.train.Saver()
@@ -57,7 +72,7 @@ def run_train(sess, train_gen, train_params, val_gen=None, val_params=None, run_
     i_step = 0
 
     for i_epoch in tr:
-        if train_iter_epoch:
+        if train_gen is not None and train_iter_epoch:
             train_gen, train_gen_copy = itertools.tee(train_gen, 2)
         else:
             train_gen_copy = train_gen
