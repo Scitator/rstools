@@ -72,10 +72,11 @@ def run_train(sess, train_gen, train_params, val_gen=None, val_params=None, run_
     i_step = 0
 
     for i_epoch in tr:
-        if train_gen is not None and train_iter_epoch:
-            train_gen, train_gen_copy = itertools.tee(train_gen, 2)
-        else:
-            train_gen_copy = train_gen
+        if train_gen is not None:
+            if train_iter_epoch:
+                train_gen, train_gen_copy = itertools.tee(train_gen, 2)
+            else:
+                train_gen_copy = train_gen
         train_epoch_history = run_generator(
             i_step, sess, data_gen=train_gen_copy, logger=logger, **train_params)
         for metric in train_epoch_history:
